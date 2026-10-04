@@ -2,7 +2,9 @@
 Each of the functions in this file takes a single line of input and transforms the line in some way.
 '''
 
+
 def compile_headers(line):
+
     '''
     Convert markdown headers into <h1>,<h2>,etc tags.
 
@@ -26,6 +28,10 @@ def compile_headers(line):
     >>> compile_headers('      # this is not a header')
     '      # this is not a header'
     '''
+
+    for n in range(1, 7):
+        if line.startswith('#' * n + ' '):
+            return f'<h{n}>{line[n:]}</h{n}>'
     return line
 
 
@@ -50,6 +56,12 @@ def compile_italic_star(line):
     >>> compile_italic_star('*')
     '*'
     '''
+
+    start = line.find('*')
+    if start != -1:
+        end = line.find('*', start + 1)
+        if end != -1:
+            line = line[:start] + f'<i>{line[start + 1:end]}</i>' + line[end + 1:]
     return line
 
 
@@ -71,6 +83,11 @@ def compile_italic_underscore(line):
     >>> compile_italic_underscore('_')
     '_'
     '''
+    start = line.find('_')
+    if start != -1:
+        end = line.find('_', start + 1)
+        if end != -1:
+            line = line[:start] + f'<i>{line[start + 1:end]}</i>' + line[end + 1:]
     return line
 
 
@@ -94,6 +111,11 @@ def compile_strikethrough(line):
     >>> compile_strikethrough('~~')
     '~~'
     '''
+    start = line.find('~~')
+    if start != -1:
+        end = line.find('~~', start + 2)
+        if end != -1:
+            line = line[:start] + f'<ins>{line[start + 2:end]}</ins>' + line[end + 2:]
     return line
 
 
@@ -115,6 +137,12 @@ def compile_bold_stars(line):
     >>> compile_bold_stars('**')
     '**'
     '''
+    start = line.find('**')
+    if start != -1:
+        end = line.find('**', start + 2)
+        if end != -1:
+            line = line[:start] + f'<b>{line[start + 2:end]}</b>' + line[end + 2:]
+
     return line
 
 
@@ -136,6 +164,11 @@ def compile_bold_underscore(line):
     >>> compile_bold_underscore('__')
     '__'
     '''
+    start = line.find('__')
+    if start != -1:
+        end = line.find('__', start + 2)
+        if end != -1:
+            line = line[:start] + f'<b>{line[start + 2:end]}</b>' + line[end + 2:]
     return line
 
 
@@ -166,6 +199,17 @@ def compile_code_inline(line):
     >>> compile_code_inline('```python3')
     '```python3'
     '''
+
+    start = line.find('`')
+    if '```' in line:
+        return line
+    if start != -1:
+        end = line.find('`', start + 1)
+        if end != -1:
+            code = line[start + 1:end]
+            code = code.replace('<', '&lt;')
+            code = code.replace('>', '&gt;')
+            line = line[:start] + f'<code>{code}</code>' + line[end + 1:]
     return line
 
 
@@ -186,6 +230,17 @@ def compile_links(line):
     >>> compile_links('this is wrong: [course webpage](https://github.com/mikeizbicki/cmc-csci040')
     'this is wrong: [course webpage](https://github.com/mikeizbicki/cmc-csci040'
     '''
+
+    start = line.find('[')
+    if start != -1:
+        middle = line.find('](', start + 1)
+        if middle != -1:
+            url_end = line.find(')', middle + 2)
+            if url_end != -1:
+                url = line[middle + 2:url_end]
+                link_text = line[start + 1:middle]
+                line = line[:start] + f'<a href="{url}">{link_text}</a>' + line[url_end + 1:]
+
     return line
 
 
@@ -205,4 +260,14 @@ def compile_images(line):
     >>> compile_images('This is an image of Mike Izbicki: ![Mike Izbicki](https://avatars1.githubusercontent.com/u/1052630?v=2&s=460)')
     'This is an image of Mike Izbicki: <img src="https://avatars1.githubusercontent.com/u/1052630?v=2&s=460" alt="Mike Izbicki" />'
     '''
+    start = line.find('![')
+    if start != -1:
+        middle = line.find('](', start + 2)
+        if middle != -1:
+            url_end = line.find(')', middle + 2)
+            if url_end != -1:
+                url = line[middle + 2:url_end]
+                alt_text = line[start + 2:middle]
+                line = line[:start] + f'<img src="{url}" alt="{alt_text}" />' + line[url_end + 1:]
+
     return line
