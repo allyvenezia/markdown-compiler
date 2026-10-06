@@ -31,7 +31,7 @@ def compile_headers(line):
 
     for n in range(1, 7):
         if line.startswith('#' * n + ' '):
-            return f'<h{n}>{line[n:]}</h{n}>'
+            return '<h' + str(n) + '>' + line[n:] + '</h' + str(n) + '>'
     return line
 
 
@@ -61,7 +61,7 @@ def compile_italic_star(line):
     if start != -1:
         end = line.find('*', start + 1)
         if end != -1:
-            line = line[:start] + f'<i>{line[start + 1:end]}</i>' + line[end + 1:]
+            line = line[:start] + '<i>' + line[start + 1:end] + '</i>' + line[end + 1:]
     return line
 
 
@@ -87,7 +87,7 @@ def compile_italic_underscore(line):
     if start != -1:
         end = line.find('_', start + 1)
         if end != -1:
-            line = line[:start] + f'<i>{line[start + 1:end]}</i>' + line[end + 1:]
+            line = line[:start] + '<i>' + line[start + 1:end] + '</i>' + line[end + 1:]
     return line
 
 
@@ -115,7 +115,7 @@ def compile_strikethrough(line):
     if start != -1:
         end = line.find('~~', start + 2)
         if end != -1:
-            line = line[:start] + f'<ins>{line[start + 2:end]}</ins>' + line[end + 2:]
+            line = line[:start] + '<ins>' + line[start + 2:end] + '</ins>' + line[end + 2:]
     return line
 
 
@@ -141,7 +141,7 @@ def compile_bold_stars(line):
     if start != -1:
         end = line.find('**', start + 2)
         if end != -1:
-            line = line[:start] + f'<b>{line[start + 2:end]}</b>' + line[end + 2:]
+            line = line[:start] + '<b>' + line[start + 2:end] + '</b>' + line[end + 2:]
 
     return line
 
@@ -168,7 +168,7 @@ def compile_bold_underscore(line):
     if start != -1:
         end = line.find('__', start + 2)
         if end != -1:
-            line = line[:start] + f'<b>{line[start + 2:end]}</b>' + line[end + 2:]
+            line = line[:start] + '<b>' + line[start + 2:end] + '</b>' + line[end + 2:]
     return line
 
 
@@ -209,7 +209,7 @@ def compile_code_inline(line):
             code = line[start + 1:end]
             code = code.replace('<', '&lt;')
             code = code.replace('>', '&gt;')
-            line = line[:start] + f'<code>{code}</code>' + line[end + 1:]
+            line = line[:start] + '<code>' + code + '</code>' + line[end + 1:]
     return line
 
 
@@ -239,7 +239,7 @@ def compile_links(line):
             if url_end != -1:
                 url = line[middle + 2:url_end]
                 link_text = line[start + 1:middle]
-                line = line[:start] + f'<a href="{url}">{link_text}</a>' + line[url_end + 1:]
+                line = line[:start] + '<a href="' + url + '">' + link_text + '</a>' + line[url_end + 1:]
 
     return line
 
@@ -268,6 +268,6 @@ def compile_images(line):
             if url_end != -1:
                 url = line[middle + 2:url_end]
                 alt_text = line[start + 2:middle]
-                line = line[:start] + f'<img src="{url}" alt="{alt_text}" />' + line[url_end + 1:]
+                line = line[:start] + '<img src="' + url + '" alt="' + alt_text + '" />' + line[url_end + 1:]
 
     return line
